@@ -1,10 +1,28 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Chonky Security Blog</title>
-    <link>https://chonkysec.github.io/</link>
-    <description>Recent content on Chonky Security Blog</description>
+    <title>Hello Friend NG</title>
+    <link>https://chonkysec.github.io/index.html</link>
+    <description>Recent content on Hello Friend NG</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://chonkysec.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright><atom:link href="https://chonkysec.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Tags</title>
+      <link>https://chonkysec.github.io/tags/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://chonkysec.github.io/tags/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
+
+      
+      <guid>https://chonkysec.github.io/posts/2014/09/cr%C3%A9ation-dun-nouveau-th%C3%A8me/</guid>
+      <description>Introduction Ce tutoriel vous montrera comment créer un thème simple pour Hugo. Je suppose que vous êtes familier avec HTML, la ligne de commande bash, et que vous êtes à l&amp;rsquo;aise avec Markdown pour formater le contenu. Je vais expliquer comment Hugo utilise des modèles et comment vous pouvez organiser vos modèles pour créer un thème. Je ne couvrirai pas l&amp;rsquo;utilisation de CSS pour styliser votre thème.
+Nous allons commencer par créer un nouveau site avec un modèle très basique.</description>
+    </item>
+    
   </channel>
 </rss>

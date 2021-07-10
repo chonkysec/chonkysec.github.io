@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
-  <url>
-    <loc>https://chonkysec.github.io/categories/</loc>
-  </url>
+  <sitemap>
+    <loc>https://chonkysec.github.io/en/sitemap.xml</loc>
+    
+      <lastmod>2014-09-28T00:00:00+00:00</lastmod>
+    
+  </sitemap>
   
-  <url>
-    <loc>https://chonkysec.github.io/</loc>
-  </url>
+  <sitemap>
+    <loc>https://chonkysec.github.io/fr/sitemap.xml</loc>
+    
+  </sitemap>
   
-  <url>
-    <loc>https://chonkysec.github.io/tags/</loc>
-  </url>
-  
-</urlset>
+</sitemapindex>

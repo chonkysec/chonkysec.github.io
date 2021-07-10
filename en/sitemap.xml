@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://chonkysec.github.io/posts/2014/09/cr%C3%A9ation-dun-nouveau-th%C3%A8me/</loc>
+    <lastmod>2014-09-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://chonkysec.github.io/</loc>
+    <lastmod>2014-09-28T00:00:00+00:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="https://chonkysec.github.io/fr/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://chonkysec.github.io/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://chonkysec.github.io/posts/</loc>
+    <lastmod>2014-09-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://chonkysec.github.io/index.html</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="https://chonkysec.github.io/fr/index.html"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://chonkysec.github.io/index.html"
+                />
+  </url>
+  
+  <url>
+    <loc>https://chonkysec.github.io/tags/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="https://chonkysec.github.io/fr/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://chonkysec.github.io/tags/"
+                />
+  </url>
+  
+</urlset>
